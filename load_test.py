@@ -7,18 +7,18 @@ class AccountingApiUser(HttpUser):
 
     @task
     def create_job(self):
-        self.client.post("/v1/jobs/", json={
+        self.client.post("/v1/jobs/create", json={
             "name": "Software Developer",
             "description": "Develops software applications."
         })
 
     @task
     def list_jobs(self):
-        self.client.get("/v1/jobs/")
+        self.client.get("/v1/jobs/list")
 
     @task
     def create_transaction(self):
-        self.client.post("/v1/transactions/", json={
+        self.client.post("/v1/transactions/create", json={
             "job_id": 1,
             "account_debit": "DE89370400440532013000",
             "account_credit": "DE89370400440532013001",
@@ -28,15 +28,15 @@ class AccountingApiUser(HttpUser):
 
     @task
     def list_transactions(self):
-        self.client.get("/v1/transactions/")
+        self.client.get("/v1/transactions/list")
 
     @task
     def seal_transactions(self):
-        self.client.post("/v1/seal-transactions/")
+        self.client.post("/v1/transactions/seal")
 
     @task
     def revise_transaction(self):
-        self.client.post("/v1/transactions/1/revise/", json={
+        self.client.post("/v1/transactions/1/revise", json={
             "job_id": 1,
             "account_debit": "DE89370400440532013000",
             "account_credit": "DE89370400440532013001",
@@ -46,4 +46,4 @@ class AccountingApiUser(HttpUser):
 
     @task
     def list_revisions(self):
-        self.client.get("/v1/revisions/")
+        self.client.get("/v1/revisions/list")

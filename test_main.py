@@ -13,12 +13,12 @@ client = TestClient(app)
 
 @pytest.fixture
 def sample_job():
-    return client.post("/v1/jobs/", json={"name": "Driver", "description": "Experienced driver"}).json()
+    return client.post("/v1/jobs/create", json={"name": "Driver", "description": "Experienced driver"}).json()
 
 
 @pytest.fixture
 def sample_transaction(sample_job):
-    return client.post("/v1/transactions/", json={
+    return client.post("/v1/transactions/create", json={
         "job_id": sample_job["id"],
         "account_debit": "DE89370400440532013000",
         "account_credit": "DE89370400440532013001",
@@ -29,7 +29,7 @@ def sample_transaction(sample_job):
 
 @pytest.fixture
 def sample_revision(sample_transaction):
-    return client.post(f"/v1/transactions/{sample_transaction['id']}/revise/", json={
+    return client.post(f"/v1/transactions/{sample_transaction['id']}/revise", json={
         "job_id": 1,
         "account_debit": "DE89370400440532013000",
         "account_credit": "DE89370400440532013001",
@@ -47,29 +47,29 @@ def no_transactions():
 
 
 def create_sample_sealed_manifest():
-    return client.post("/v1/seal-transactions/")
+    return client.post("/v1/transactions/seal")
 
 
 def test_create_job_creates_new_job():
-    response = client.post("/v1/jobs/", json={"name": "Driver", "description": "Experienced driver"})
+    response = client.post("/v1/jobs/create", json={"name": "Driver", "description": "Experienced driver"})
     assert response.status_code == 200
     assert response.json()["name"] == "Driver"
 
 
 def test_create_job_with_missing_fields():
-    response = client.post("/v1/jobs/", json={"name": "Driver"})
+    response = client.post("/v1/jobs/create", json={"name": "Driver"})
     assert response.status_code == 200
     assert response.json()["description"] is None
 
 
 def test_list_jobs_returns_all_jobs(sample_job):
-    response = client.get("/v1/jobs/")
+    response = client.get("/v1/jobs/list")
     assert response.status_code == 200
     assert len(response.json()) > 0
 
 
 def test_create_transaction_creates_new_transaction(sample_job):
-    response = client.post("/v1/transactions/", json={
+    response = client.post("/v1/transactions/create", json={
         "job_id": sample_job["id"],
         "account_debit": "DE89370400440532013000",
         "account_credit": "DE89370400440532013001",
@@ -81,7 +81,7 @@ def test_create_transaction_creates_new_transaction(sample_job):
 
 
 def test_create_transaction_with_missing_accounts(sample_job):
-    response = client.post("/v1/transactions/", json={
+    response = client.post("/v1/transactions/create", json={
         "job_id": sample_job["id"],
         "amount": 100.0,
         "timestamp": datetime.now(timezone.utc).isoformat()
@@ -90,7 +90,7 @@ def test_create_transaction_with_missing_accounts(sample_job):
 
 
 def test_create_transaction_with_negative_amount(sample_job):
-    response = client.post("/v1/transactions/", json={
+    response = client.post("/v1/transactions/create", json={
         "job_id": sample_job["id"],
         "account_debit": "DE89370400440532013000",
         "account_credit": "DE89370400440532013001",
@@ -101,7 +101,7 @@ def test_create_transaction_with_negative_amount(sample_job):
 
 
 def test_create_transaction_with_invalid_timestamp(sample_job):
-    response = client.post("/v1/transactions/", json={
+    response = client.post("/v1/transactions/create", json={
         "job_id": sample_job["id"],
         "account_debit": "DE89370400440532013000",
         "account_credit": "DE89370400440532013001",
@@ -112,7 +112,7 @@ def test_create_transaction_with_invalid_timestamp(sample_job):
 
 
 def test_list_transactions_returns_all_transactions(sample_transaction):
-    response = client.get("/v1/transactions/")
+    response = client.get("/v1/transactions/list")
     assert response.status_code == 200
     assert len(response.json()) > 0
 
@@ -140,7 +140,7 @@ def test_revise_transaction_creates_revision(sample_transaction):
         "amount": 200.0,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
-    response = client.post(f"/v1/transactions/{sample_transaction['id']}/revise/", json=new_transaction_data)
+    response = client.post(f"/v1/transactions/{sample_transaction['id']}/revise", json=new_transaction_data)
     assert response.status_code == 200
     response_json = response.json()
     assert response_json != {}
@@ -157,11 +157,11 @@ def test_revise_non_existent_transaction():
         "amount": 200.0,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
-    response = client.post("/v1/transactions/9999/revise/", json=new_transaction_data)
+    response = client.post("/v1/transactions/9999/revise", json=new_transaction_data)
     assert response.status_code == 404
 
 
 def test_list_revisions_returns_all_revisions(sample_revision):
-    response = client.get("/v1/revisions/")
+    response = client.get("/v1/revisions/list")
     assert response.status_code == 200
     assert len(response.json()) > 0

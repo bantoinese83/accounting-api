@@ -83,13 +83,13 @@ environment variable to use a different database.
 
 | **Endpoint**                                | **Method** | **Description**                       |
 |---------------------------------------------|------------|---------------------------------------|
-| `/v1/jobs/`                                 | `POST`     | Create a new job record.              |
-| `/v1/jobs/`                                 | `GET`      | List all job records.                 |
-| `/v1/transactions/`                         | `POST`     | Create a new transaction.             |
-| `/v1/transactions/`                         | `GET`      | List all transactions.                |
-| `/v1/transactions/{transaction_id}/revise/` | `POST`     | Revise an existing transaction.       |
-| `/v1/seal-transactions/`                    | `POST`     | Seal transactions for data integrity. |
-| `/v1/revisions/`                            | `GET`      | List all transaction revisions.       |
+| `/v1/jobs/create`                           | `POST`     | Create a new job record.              |
+| `/v1/jobs/list`                             | `GET`      | List all job records.                 |
+| `/v1/transactions/create`                   | `POST`     | Create a new transaction.             |
+| `/v1/transactions/list`                     | `GET`      | List all transactions.                |
+| `/v1/transactions/{transaction_id}/revise`  | `POST`     | Revise an existing transaction.       |
+| `/v1/transactions/seal`                     | `POST`     | Seal transactions for data integrity. |
+| `/v1/revisions/list`                        | `GET`      | List all transaction revisions.       |
 
 ## 📊 GitHub Profile Insights
 
